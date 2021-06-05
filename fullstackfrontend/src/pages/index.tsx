@@ -1,5 +1,10 @@
-import { Button } from "@chakra-ui/react";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
-  return <Button>Home page</Button>;
+  return (
+    <>
+      <Navbar />
+      <div>hi</div>
+    </>
+  );
 }
