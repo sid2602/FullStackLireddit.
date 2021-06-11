@@ -1,7 +1,7 @@
 import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
+
 import { __prod__, COOKIE_NAME } from "./constants";
-import microConfig from "./mikro-orm.config";
+
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -14,13 +14,22 @@ import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import cors from "cors";
 import sendEmail from "./utils/sendEmail";
-// import { User } from "./entities/User";
 
+import { createConnection } from "typeorm";
+import { User } from "./entities/User";
+import { Post } from "./entities/Post";
 const main = async () => {
+  await createConnection({
+    type: "postgres",
+    username: "postgres",
+    password: "password",
+    database: "liredit2",
+    synchronize: true,
+    logging: true,
+    entities: [Post, User],
+  });
+
   sendEmail("sidhd2602@gmail.com", "hello world");
-  const orm = await MikroORM.init(microConfig);
-  await orm.getMigrator().up();
-  // await orm.em.nativeDelete(User, {});
 
   const app = express();
 
@@ -53,7 +62,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
   });
   apolloServer.applyMiddleware({
     app,
