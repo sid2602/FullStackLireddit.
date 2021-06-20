@@ -18,16 +18,19 @@ import sendEmail from "./utils/sendEmail";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import { Post } from "./entities/Post";
+import path from "path";
 const main = async () => {
-  await createConnection({
+  const conn = await createConnection({
     type: "postgres",
     username: "postgres",
     password: "password",
     database: "liredit2",
     synchronize: true,
     logging: true,
+    migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User],
   });
+  await conn.runMigrations();
 
   sendEmail("sidhd2602@gmail.com", "hello world");
 
